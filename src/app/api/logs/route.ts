@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server';
 
-import database from '@/utils/db';
+import { TravelLogWithId, TravelLogs } from '@/lib/logs/TravelLogModel';
 
 interface MessageResponse {
   status: number;
-  message?: string;
-  data?: unknown;
+  message: string;
+}
+
+interface APIResponse<T> extends MessageResponse {
+  data: T;
 }
 
 export async function GET() {
-  const logs = await database.collection('logs').find().toArray();
-  return NextResponse.json<MessageResponse>(
+  const logs = await TravelLogs.find().toArray();
+  return NextResponse.json<APIResponse<TravelLogWithId[]>>(
     {
       status: 200,
-      message: 'Hello, World',
+      message: 'Logs',
       data: logs,
     },
     {
