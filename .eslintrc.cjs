@@ -8,5 +8,7 @@ module.exports = {
     'airbnb-typescript',
     'plugin:prettier/recommended',
   ],
-  rules: {},
+  rules: {
+    'import/prefer-default-export': ['off'],
+  },
 };
