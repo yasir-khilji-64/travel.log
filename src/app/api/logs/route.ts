@@ -42,8 +42,7 @@ export async function GET() {
 
 export async function POST(req: APIRequest) {
   try {
-    const data = await req.json();
-    const validated = await TravelLogSchema.parseAsync(data);
+    const validated = await TravelLogSchema.parseAsync(await req.json());
     const result = await TravelLogs.insertOne(validated);
     return NextResponse.json<APIResponse<TravelLogWithId>>(
       {
