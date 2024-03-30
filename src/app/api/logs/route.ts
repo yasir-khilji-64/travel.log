@@ -20,12 +20,6 @@ interface APIRequest extends NextRequest {
   json: () => Promise<TravelLogType>;
 }
 
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
-
 export async function GET() {
   const logs = await TravelLogs.find().toArray();
   return NextResponse.json<APIResponse<TravelLogWithId[]>>(

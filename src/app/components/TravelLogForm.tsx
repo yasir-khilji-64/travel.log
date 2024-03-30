@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   TravelLogKey,
-  // TravelLogKeys,
   TravelLogSchema,
   TravelLogType,
 } from '@/lib/logs/TravelLogSchema';
@@ -14,18 +13,12 @@ import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 
-// interface TravelLogInput {
-//   name: TravelLogKey;
-//   type: 'text' | 'url' | 'textarea' | 'number' | 'date';
-// }
+interface InputProps {
+  label: string;
+  type: 'number' | 'text' | 'textarea' | 'url' | 'date';
+}
 
-const TravelLogInputs: Record<
-  TravelLogKey,
-  {
-    label?: string;
-    type: 'text' | 'textarea' | 'url' | 'number' | 'date';
-  }
-> = {
+const TravelLogInputs: Record<TravelLogKey, InputProps> = {
   title: {
     label: 'Title',
     type: 'text',
@@ -56,6 +49,70 @@ const TravelLogInputs: Record<
   },
 };
 
+const getStep = (label: string) => {
+  if (label === 'Latitude' || label === 'Longitude') return 'any';
+  if (label === 'Rating') return 0.1;
+  return undefined;
+};
+
+const getRenderComponent = (
+  key: TravelLogKey,
+  value: InputProps,
+  register: any,
+  errors: any
+) => {
+  switch (value.type) {
+    case 'number':
+      return (
+        <Input
+          type={value.type}
+          step={getStep(value.label)}
+          placeholder={value.label}
+          {...register(key as TravelLogKey)}
+          className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''}`}
+        />
+      );
+    case 'text':
+      return (
+        <Input
+          type={value.type}
+          placeholder={value.label}
+          {...register(key as TravelLogKey)}
+          className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''}`}
+        />
+      );
+    case 'textarea':
+      return (
+        <Textarea
+          placeholder={value.label}
+          maxLength={150}
+          {...register(key as TravelLogKey)}
+          className={`rounded-xl w-full max-h-[200px] ${errors[key] ? 'border-destructive' : ''}`}
+        />
+      );
+    case 'url':
+      return (
+        <Input
+          type={value.type}
+          placeholder={value.label}
+          {...register(key as TravelLogKey)}
+          className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''}`}
+        />
+      );
+    case 'date':
+      return (
+        <Input
+          type={value.type}
+          placeholder={value.label}
+          {...register(key as TravelLogKey)}
+          className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''}`}
+        />
+      );
+    default:
+      return <></>;
+  }
+};
+
 export function TravelLogForm() {
   const {
     register,
@@ -63,8 +120,27 @@ export function TravelLogForm() {
     formState: { errors },
   } = useForm<TravelLogType>({
     resolver: zodResolver(TravelLogSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      image: '',
+      rating: 2.5,
+      latitude: 32.765,
+      longitude: -74.775,
+    },
   });
-  const onSubmit: SubmitHandler<TravelLogType> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<TravelLogType> = async (data) => {
+    const response = await fetch('/api/logs', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    const json = await response.json();
+    console.log(data);
+    console.log(json);
+  };
 
   return (
     <form
@@ -73,34 +149,25 @@ export function TravelLogForm() {
     >
       {Object.entries(TravelLogInputs).map(([name, value]) => {
         const key = name as TravelLogKey;
-        const { label } = value;
         return (
-          // Todo: Add Date component from Shadcn
           <div key={key} className="w-full">
-            {value.type === 'textarea' ? (
-              <Textarea
-                placeholder={label}
-                {...register(key as TravelLogKey)}
-                className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''} ${key === 'title' ? 'mt-2' : ''}`}
-              />
-            ) : (
-              <Input
-                type={value.type}
-                step={0.1}
-                placeholder={label}
-                {...register(key as TravelLogKey)}
-                className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''} ${key === 'title' ? 'mt-2' : ''}`}
-              />
-            )}
-            {errors[key] && (
-              <Label htmlFor="title" className="text-destructive">
-                {errors[key]?.message}
+            <div className="flex flex-col">
+              <Label
+                htmlFor={value.label}
+                className="text-sm font-medium mb-2"
+                // className={`${value.label === 'Title' ? 'mt-2' : ''}`}
+              >
+                {value.label}
               </Label>
+              {getRenderComponent(key, value, register, errors)}
+            </div>
+            {errors[key] && (
+              <Label className="text-destructive">{errors[key]?.message}</Label>
             )}
           </div>
         );
       })}
-      <Button variant="default" type="submit">
+      <Button variant="secondary" type="submit">
         Create
       </Button>
     </form>
