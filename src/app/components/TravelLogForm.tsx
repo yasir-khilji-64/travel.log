@@ -55,6 +55,20 @@ const getStep = (label: string) => {
   return undefined;
 };
 
+const getMax = (label: string) => {
+  if (label === 'Rating') return 5;
+  if (label === 'Latitude') return 90;
+  if (label === 'Longitude') return 180;
+  return undefined;
+};
+
+const getMin = (label: string) => {
+  if (label === 'Rating') return 0;
+  if (label === 'Latitude') return -90;
+  if (label === 'Longitude') return -180;
+  return undefined;
+};
+
 const getRenderComponent = (
   key: TravelLogKey,
   value: InputProps,
@@ -67,6 +81,8 @@ const getRenderComponent = (
         <Input
           type={value.type}
           step={getStep(value.label)}
+          max={getMax(value.label)}
+          min={getMin(value.label)}
           placeholder={value.label}
           {...register(key as TravelLogKey)}
           className={`rounded-xl w-full ${errors[key] ? 'border-destructive' : ''}`}

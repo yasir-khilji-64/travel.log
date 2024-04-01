@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -50,7 +49,6 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -58,4 +56,33 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.mapboxgl-popup-content {
+  background: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.popupTile {
+  background-color: #87bd41;
+}
+
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+  border-bottom-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+  border-top-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.mapboxgl-popup {
+  width: auto;
 }
