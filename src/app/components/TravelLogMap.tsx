@@ -52,6 +52,9 @@ function TravelLogMap({ logs }: TravelLogMapProps) {
       style={{ width: '100vw', height: '100vh' }}
       attributionControl={false}
       ref={mapRef}
+      onClick={(e) => {
+        console.log(e.lngLat);
+      }}
     >
       {pins}
       {popupInfo && (

@@ -12,10 +12,6 @@ interface APIResponse<T> extends MessageResponse {
   data: T;
 }
 
-interface ErrorResponse<T> extends MessageResponse {
-  error: T;
-}
-
 interface APIRequest extends NextRequest {
   json: () => Promise<TravelLogType>;
 }
@@ -53,11 +49,9 @@ export async function POST(req: APIRequest) {
     );
   } catch (error: any) {
     const status = error?.name === 'ZodError' ? 422 : 500;
-    return NextResponse.json<ErrorResponse<unknown>>(
+    return NextResponse.json(
       {
-        status,
-        message: 'Server error',
-        error,
+        message: error.message,
       },
       {
         status,

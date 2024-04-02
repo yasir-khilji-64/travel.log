@@ -1,17 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 
 import {
   TravelLogKey,
   TravelLogSchema,
   TravelLogType,
 } from '@/lib/logs/TravelLogSchema';
+import { AlertCircle } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 interface InputProps {
   label: string;
@@ -129,10 +133,17 @@ const getRenderComponent = (
   }
 };
 
-export function TravelLogForm() {
+interface TravelLogFormProps {
+  onComplete: () => void;
+}
+
+export function TravelLogForm({ onComplete }: TravelLogFormProps) {
+  const [formError, setFormError] = useState('');
+  const router = useRouter();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<TravelLogType>({
     resolver: zodResolver(TravelLogSchema),
@@ -146,16 +157,27 @@ export function TravelLogForm() {
     },
   });
   const onSubmit: SubmitHandler<TravelLogType> = async (data) => {
-    const response = await fetch('/api/logs', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    const json = await response.json();
-    console.log(data);
-    console.log(json);
+    try {
+      setFormError('');
+      const response = await fetch('/api/logs', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.ok) {
+        reset();
+        onComplete();
+        router.refresh();
+      } else {
+        const json = await response.json();
+        throw new Error(json.message);
+      }
+    } catch (e) {
+      const error = e as Error;
+      setFormError(error.message);
+    }
   };
 
   return (
@@ -163,6 +185,13 @@ export function TravelLogForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="mx-auto max-w-md flex gap-4 flex-col"
     >
+      {formError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{formError}</AlertDescription>
+        </Alert>
+      )}
       {Object.entries(TravelLogInputs).map(([name, value]) => {
         const key = name as TravelLogKey;
         return (
