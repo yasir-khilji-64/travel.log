@@ -197,11 +197,7 @@ export function TravelLogForm({ onComplete }: TravelLogFormProps) {
         return (
           <div key={key} className="w-full">
             <div className="flex flex-col">
-              <Label
-                htmlFor={value.label}
-                className="text-sm font-medium mb-2"
-                // className={`${value.label === 'Title' ? 'mt-2' : ''}`}
-              >
+              <Label htmlFor={value.label} className="text-sm font-medium mb-2">
                 {value.label}
               </Label>
               {getRenderComponent(key, value, register, errors)}

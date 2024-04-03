@@ -2,6 +2,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from 'mapbox-gl';
 import Map, { MapRef, Marker, NavigationControl, Popup } from 'react-map-gl';
 
 import type { TravelLogWithId } from '@/lib/logs/TravelLogModel';
@@ -12,6 +13,8 @@ interface TravelLogMapProps {
 }
 
 function TravelLogMap({ logs }: TravelLogMapProps) {
+  const [newTravelLogLocation, setNewTravelLogLocation] =
+    useState<mapboxgl.LngLat | null>(null);
   const [popupInfo, setPopupInfo] = useState<TravelLogWithId | null>(null);
   const mapRef = useRef<MapRef | null>(null);
   const pins = useMemo(
@@ -53,9 +56,19 @@ function TravelLogMap({ logs }: TravelLogMapProps) {
       attributionControl={false}
       ref={mapRef}
       onClick={(e) => {
-        console.log(e.lngLat);
+        console.log(e);
+        setNewTravelLogLocation(e.lngLat);
       }}
     >
+      {newTravelLogLocation && (
+        <Marker
+          longitude={newTravelLogLocation.lng}
+          latitude={newTravelLogLocation.lat}
+          anchor="bottom"
+        >
+          <Pin />
+        </Marker>
+      )}
       {pins}
       {popupInfo && (
         <Popup
